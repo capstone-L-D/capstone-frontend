@@ -1,0 +1,60 @@
+/* CourseContent.css */
+
+/* Container to hold both the sidebar and content area */
+.course-content-container {
+    display: flex;
+    height: 100vh;
+    background: linear-gradient(to right, #ebf8ff, #5a67d8); /* Background similar to bg-gradient-to-r from-blue-50 to-indigo-100 */
+    position: relative; /* To position the button */
+  }
+  
+  /* Button to toggle content visibility */
+  .toggle-content-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4c51bf;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 10; /* Ensure the button is always above the other content */
+  }
+  
+  /* Button hover effect */
+  .toggle-content-btn:hover {
+    background-color: #434190;
+  }
+  
+  /* Main content area */
+  .main-content {
+    flex: 1;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 32px;
+    margin: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out; /* Smooth transition for resizing */
+  }
+  
+  /* Empty state message */
+  .empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #a0aec0; /* text-gray-400 */
+  }
+  
+  /* Module Sidebar */
+  .module-sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    position: relative; /* Sidebar remains in place */
+  }
+  
