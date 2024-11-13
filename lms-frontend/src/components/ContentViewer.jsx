@@ -7,32 +7,32 @@ function ContentViewer({ content }) {
       );
     }
   
-    if (content.type === 'video') {
+    if (content.contentType === 'video') {
       return (
         <div className="h-full flex flex-col">
           <div className="aspect-video bg-black">
             <iframe
-              src={content.url}
+              src={content.contentUrl}
               className="w-full h-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             ></iframe>
           </div>
           <div className="p-4">
-            <h2 className="text-xl font-semibold text-gray-800">{content.title}</h2>
-            <p className="mt-2 text-gray-600">{content.description}</p>
+            <h2 className="text-xl font-semibold text-gray-800">{content.contentTitle}</h2>
+            <p className="mt-2 text-gray-600">{content.contentTitle}</p>
           </div>
         </div>
       );
     }
   
-    if (content.type === 'pdf') {
+    if (content.contentType === 'pdf') {
       return (
         <div className="h-full flex flex-col">
           <iframe
-            src={content.url}
+            src={content.contentUrl}
             className="w-full h-full"
-            title={content.title}
+            title={content.contentTitle}
           ></iframe>
         </div>
       );

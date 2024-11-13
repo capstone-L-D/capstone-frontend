@@ -1,76 +1,130 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModuleSidebar from "./ModuleSIdebar";
 import ContentViewer from "../components/ContentViewer";
+import { useParams } from "react-router-dom";
 
 function CourseContent() {
   const [selectedContent, setSelectedContent] = useState(null);
   const [openModule, setOpenModule] = useState(null); // Track which module's dropdown is open
 
-  const modules = [
-    {
-      id: 1,
-      title: "Module 1: Introduction to React",
-      contents: [
-        {
-          id: 1,
-          type: "video",
-          title: "Getting Started with React",
-          url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-          description: "Learn the basics of React and its core concepts.",
-          onSelect: (content) => setSelectedContent(content),
-        },
-        {
-          id: 2,
-          type: "pdf",
-          title: "React Fundamentals Guide",
-          url: "https://mozilla.github.io/pdf.js/web/viewer.html",
-          onSelect: (content) => setSelectedContent(content),
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: "Module 2: State Management",
-      contents: [
-        {
-          id: 3,
-          type: "video",
-          title: "Understanding React State",
-          url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-          description: "Deep dive into React state management.",
-          onSelect: (content) => setSelectedContent(content),
-        },
-        {
-          id: 4,
-          type: "pdf",
-          title: "State Management Best Practices",
-          url: "https://mozilla.github.io/pdf.js/web/viewer.html",
-          onSelect: (content) => setSelectedContent(content),
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: "Module 3: Advanced Concepts",
-      contents: [
-        {
-          id: 5,
-          type: "video",
-          title: "React Hooks in Depth",
-          url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-          description: "Master React Hooks and their use cases.",
-          onSelect: (content) => setSelectedContent(content),
-        },
-        {
-          id: 6,
-          type: "pdf",
-          title: "Advanced React Patterns",
-          url: "https://mozilla.github.io/pdf.js/web/viewer.html",
-          onSelect: (content) => setSelectedContent(content),
-        },
-      ],
-    },
-  ];
+  const [modules, setModules] = useState([]);
+  let {cName, UCID } = useParams();
+  const url = `http://localhost:7076/api/user-course-modules/modules/${UCID}`;
+  console.log("ucid" + UCID);
+  console.log("name " + cName)
+  const token = localStorage.getItem("authToken");
+  const loadAllModules = async () => {
+    const UserData = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the JWT token in the header
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setModules([...data]);
+
+        console.log(data);
+      });
+  };
+  useEffect(() => {
+    loadAllModules();
+  }, []);
+
+  // completionDate
+  // :
+  // "2024-03-01"
+  // completionStatus
+  // :
+  // "In Progress"
+  // courseModuleId
+  // :
+  // "CM101"
+  // moduleDuration
+  // :
+  // "2 hours"
+  // moduleId
+  // :
+  // "M102"
+  // moduleTitle
+  // :
+  // "Introduction to Microservices2"
+  // progress
+  // :
+  // 75.5
+  // startDate
+  // :
+  // "2024-01-15"
+  // userCourseId
+  // :
+  // "UC102"
+  // userCourseModuleId
+  // :
+  // "UCM1002"
+  // const modules = [
+  //   {
+  //     id: 1,
+  //     title: "Module 1: Introduction to React",
+  //     contents: [
+  //       {
+  //         id: 1,
+  //         type: "video",
+  //         title: "Getting Started with React",
+  //         url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  //         description: "Learn the basics of React and its core concepts.",
+  //         onSelect: (content) => setSelectedContent(content),
+  //       },
+  //       {
+  //         id: 2,
+  //         type: "pdf",
+  //         title: "React Fundamentals Guide",
+  //         url: "https://mozilla.github.io/pdf.js/web/viewer.html",
+  //         onSelect: (content) => setSelectedContent(content),
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Module 2: State Management",
+  //     contents: [
+  //       {
+  //         id: 3,
+  //         type: "video",
+  //         title: "Understanding React State",
+  //         url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  //         description: "Deep dive into React state management.",
+  //         onSelect: (content) => setSelectedContent(content),
+  //       },
+  //       {
+  //         id: 4,
+  //         type: "pdf",
+  //         title: "State Management Best Practices",
+  //         url: "https://mozilla.github.io/pdf.js/web/viewer.html",
+  //         onSelect: (content) => setSelectedContent(content),
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Module 3: Advanced Concepts",
+  //     contents: [
+  //       {
+  //         id: 5,
+  //         type: "video",
+  //         title: "React Hooks in Depth",
+  //         url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  //         description: "Master React Hooks and their use cases.",
+  //         onSelect: (content) => setSelectedContent(content),
+  //       },
+  //       {
+  //         id: 6,
+  //         type: "pdf",
+  //         title: "Advanced React Patterns",
+  //         url: "https://mozilla.github.io/pdf.js/web/viewer.html",
+  //         onSelect: (content) => setSelectedContent(content),
+  //       },
+  //     ],
+  //   },
+  // ];
 
   const toggleDropdown = (moduleId) => {
     if (openModule === moduleId) {
@@ -103,7 +157,7 @@ function CourseContent() {
         }}
       >
         <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>
-          Course: Introduction to React
+          Course: {cName}
         </h1>
       </header>
 
@@ -128,7 +182,7 @@ function CourseContent() {
           {modules.map((module) => (
             <div key={module.id} style={{ marginBottom: "15px" }}>
               <button
-                onClick={() => toggleDropdown(module.id)}
+                onClick={() => toggleDropdown(module.mooduleId)}
                 style={{
                   backgroundColor: "#00509e",
                   color: "#fff",
@@ -143,7 +197,7 @@ function CourseContent() {
                   transition: "background-color 0.3s",
                 }}
               >
-                {module.title}
+                {module.moduleTitle}
               </button>
               {openModule === module.id && (
                 <ul
@@ -153,9 +207,9 @@ function CourseContent() {
                     margin: 0,
                   }}
                 >
-                  {module.contents.map((content) => (
+                  {module.contentList.map((content) => (
                     <li
-                      key={content.id}
+                      key={content.contentId}
                       style={{
                         cursor: "pointer",
                         color: content.type === "video" ? "#333" : "#555",
@@ -167,7 +221,7 @@ function CourseContent() {
                       }}
                       onClick={() => setSelectedContent(content)}
                     >
-                      {content.type === "video" ? "🎬 " : "📄 "} {content.title}
+                      {content.ContentType === "video" ? "🎬 " : "📄 "} {content.contentTitle}
                     </li>
                   ))}
                 </ul>

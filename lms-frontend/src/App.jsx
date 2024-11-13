@@ -27,7 +27,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />}></Route>
           <Route path="/dashboard" element={<DashBoard />}></Route>
-          <Route path="/courseContent"  element={<CourseContent></CourseContent>}></Route>
+          <Route path="/courseContent/:UCID/:cName"  element={<CourseContent></CourseContent>}></Route>
           <Route path="/register" element={<RegisterPage />}></Route>
 
 
