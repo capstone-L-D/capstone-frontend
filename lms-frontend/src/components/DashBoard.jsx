@@ -12,7 +12,7 @@ function DashBoard() {
   const userId = localStorage.getItem("userId");
 
   console.log(userId);
-  const url = `http://localhost:7072/api/user-courses/courses/${userId}`;
+  const url = `http://localhost:8333/api/user-courses/courses/${userId}`;
   // const courses = [
   //   {
   //     id: 1,

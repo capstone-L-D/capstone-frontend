@@ -9,7 +9,7 @@ function CourseContent() {
 
   const [modules, setModules] = useState([]);
   let {cName, UCID } = useParams();
-  const url = `http://localhost:7076/api/user-course-modules/modules/${UCID}`;
+  const url = `http://localhost:8333/api/user-course-modules/modules/${UCID}`;
   console.log("ucid" + UCID);
   console.log("name " + cName)
   const token = localStorage.getItem("authToken");

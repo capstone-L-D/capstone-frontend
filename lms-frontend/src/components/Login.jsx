@@ -31,7 +31,7 @@ function Login() {
 
     try {
       // Await the fetch request to complete and get the response
-      const response = await fetch("http://localhost:7070/api/auth/login", {
+      const response = await fetch("http://localhost:8333/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
