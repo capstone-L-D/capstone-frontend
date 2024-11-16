@@ -8,50 +8,19 @@ function DashBoard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [courses, setCourses] = useState([]);
+  const [inProgressCount, setInProgressCount] = useState(0);
+const [completedCount, setCompletedCount] = useState(0);
+const [allCourses,setAllCourses]=useState([])
   const token = localStorage.getItem("authToken");
   const userId = localStorage.getItem("userId");
 
   console.log(userId);
   const url = `http://localhost:8333/api/user-courses/courses/${userId}`;
-  // const courses = [
-  //   {
-  //     id: 1,
-  //     title: 'React.js Advanced Concepts',
-  //     instructor: 'Sarah Johnson',
-  //     progress: 60,
-  //     image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Node.js Backend Development',
-  //     instructor: 'Michael Chen',
-  //     progress: 35,
-  //     image: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-  //   },
-  //   {
-  //     id: 3,
-  //     title: 'UI/UX Design Fundamentals',
-  //     instructor: 'Emma Davis',
-  //     progress: 85,
-  //     image: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-  //   },
-  //   {
-  //       id: 4,
-  //       title: 'UI/UX Design Fundamentals',
-  //       instructor: 'Emma Davis',
-  //       progress: 85,
-  //       image: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-  //     },
-  //     {
-  //       id: 5,
-  //       title: 'UI/UX Design Fundamentals',
-  //       instructor: 'Emma Davis',
-  //       progress: 85,
-  //       image: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-  //     },
-  // ];
+  const url2=`http://localhost:8333/api/courses`;
+  
 
   const loadAllCourses = async () => {
+    try{
     const UserData = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`, // Include the JWT token in the header
@@ -61,16 +30,39 @@ function DashBoard() {
       .then((data) => {
         setCourses([...data]);
 
+        const inProgressCount = data.filter((course) => !course.isCompleted).length;
+        const completedCount = data.filter((course) => course.isCompleted).length;
+  
+        // Set these counts in state
+        setInProgressCount(inProgressCount);
+        setCompletedCount(completedCount);
         console.log(data);
       });
+      await fetch(url2, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the JWT token in the header
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          // Filter out courses that are already in userCoursesData based on courseId
+          const filteredCourses = data.filter(
+            (course) => ! courses.some((userCourse) => userCourse.courseId === course.courseId)
+          );
+    
+          setAllCourses([...filteredCourses]); // Update the state with filtered courses
+    
+          console.log(filteredCourses);
+        });}
+        catch (error) {
+          console.error("Error loading courses:", error);
+        }
+      
   };
   useEffect(() => {
     loadAllCourses();
   }, []);
-  // Sample user data
-  // const user = {
-  //   name: ,
-  // };
+
   function handleLogout() {
     window.localStorage.clear();
     window.location.href = "/";
@@ -144,15 +136,15 @@ function DashBoard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <h3 className="text-gray-500 text-sm mb-1">Courses in Progress</h3>
-            <p className="text-3xl font-bold text-indigo-600">4</p>
+            <p className="text-3xl font-bold text-indigo-600">{inProgressCount}</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <h3 className="text-gray-500 text-sm mb-1">Completed Courses</h3>
-            <p className="text-3xl font-bold text-indigo-600">12</p>
+            <p className="text-3xl font-bold text-indigo-600">{completedCount}</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <h3 className="text-gray-500 text-sm mb-1">Certificates Earned</h3>
-            <p className="text-3xl font-bold text-indigo-600">8</p>
+            <p className="text-3xl font-bold text-indigo-600">0</p>
           </div>
         </div>
 
@@ -163,7 +155,17 @@ function DashBoard() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => (
-              <CourseCard key={course.id} course={course} />
+              <CourseCard key={course.courseId} course={course} />
+            ))}
+          </div>
+        </section>
+        <section>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            New Courses
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {allCourses.map((course) => (
+              <CourseCard key={course.courseId} course={course} />
             ))}
           </div>
         </section>

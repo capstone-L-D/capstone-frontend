@@ -89,7 +89,7 @@ function Sidebar({ isOpen, onClose }) {
   const menuItems = [
     { icon: FiHome, label: 'Dashboard', active: true },
     { icon: FiBook, label: 'My Courses' },
-    { icon: FiCalendar, label: 'Schedule' },
+    // { icon: FiCalendar, label: 'Schedule' },
     { icon: FiSettings, label: 'Settings' },
     { icon: FiHelpCircle, label: 'Help Center' },
   ];

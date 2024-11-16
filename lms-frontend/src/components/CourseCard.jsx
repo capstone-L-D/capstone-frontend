@@ -4,6 +4,7 @@ function CourseCard({ course }) {
   const navigate = useNavigate();
   const UCID=course.userCourseId;
   const cName =course.courseTitle;
+  
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <img
@@ -19,7 +20,7 @@ function CourseCard({ course }) {
         <div className="mt-4 flex items-center justify-between">
           <div className="bg-blue-100 rounded-full px-3 py-1">
             <span className="text-sm text-blue-600">
-              {course.progress}% Complete
+              {course.progress} % Complete
             </span>
           </div>
           <button

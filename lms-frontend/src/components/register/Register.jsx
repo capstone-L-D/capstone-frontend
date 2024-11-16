@@ -5,6 +5,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import './Register.css';
+import Navbar from '../Navbar';
 
 const RegisterPage = () => {
   const {
@@ -14,11 +15,15 @@ const RegisterPage = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log('Form data:', data);
+   console.log(data)
+    e.preventDefault();
+
     // Handle form submission here
   };
 
   return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-blue-50">
+      <Navbar />
     <div className="register-container">
       <form onSubmit={handleSubmit(onSubmit)} className="register-form">
 
@@ -73,6 +78,7 @@ const RegisterPage = () => {
 
         <button type="submit" className="submit-button">Register</button>
       </form>
+    </div>
     </div>
   );
 };

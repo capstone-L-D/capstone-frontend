@@ -33,6 +33,7 @@ function ContentViewer({ content }) {
             src={content.contentUrl}
             className="w-full h-full"
             title={content.contentTitle}
+            
           ></iframe>
         </div>
       );

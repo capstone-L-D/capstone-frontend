@@ -1,136 +1,182 @@
 import { useEffect, useState } from "react";
-import ModuleSidebar from "./ModuleSIdebar";
+import ModuleSidebar from "./ModuleSidebar";
 import ContentViewer from "../components/ContentViewer";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function CourseContent() {
   const [selectedContent, setSelectedContent] = useState(null);
   const [openModule, setOpenModule] = useState(null); // Track which module's dropdown is open
-
   const [modules, setModules] = useState([]);
-  let {cName, UCID } = useParams();
+  const [courseProgress, setCourseProgress] = useState(0); // Track the course progress percentage
+  const [isCourseCompleted, setIsCourseCompleted] = useState(false); // Track if the course is completed
+  const { cName, UCID } = useParams();
+  const navigate = useNavigate()
+
   const url = `http://localhost:8333/api/user-course-modules/modules/${UCID}`;
-  console.log("ucid" + UCID);
-  console.log("name " + cName)
   const token = localStorage.getItem("authToken");
+
   const loadAllModules = async () => {
-    const UserData = await fetch(url, {
+    const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`, // Include the JWT token in the header
       },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setModules([...data]);
-
-        console.log(data);
-      });
+    });
+    const data = await response.json();
+    setModules(data);
+    console.log(data);
   };
+
   useEffect(() => {
     loadAllModules();
   }, []);
 
-  // completionDate
-  // :
-  // "2024-03-01"
-  // completionStatus
-  // :
-  // "In Progress"
-  // courseModuleId
-  // :
-  // "CM101"
-  // moduleDuration
-  // :
-  // "2 hours"
-  // moduleId
-  // :
-  // "M102"
-  // moduleTitle
-  // :
-  // "Introduction to Microservices2"
-  // progress
-  // :
-  // 75.5
-  // startDate
-  // :
-  // "2024-01-15"
-  // userCourseId
-  // :
-  // "UC102"
-  // userCourseModuleId
-  // :
-  // "UCM1002"
-  // const modules = [
-  //   {
-  //     id: 1,
-  //     title: "Module 1: Introduction to React",
-  //     contents: [
-  //       {
-  //         id: 1,
-  //         type: "video",
-  //         title: "Getting Started with React",
-  //         url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-  //         description: "Learn the basics of React and its core concepts.",
-  //         onSelect: (content) => setSelectedContent(content),
-  //       },
-  //       {
-  //         id: 2,
-  //         type: "pdf",
-  //         title: "React Fundamentals Guide",
-  //         url: "https://mozilla.github.io/pdf.js/web/viewer.html",
-  //         onSelect: (content) => setSelectedContent(content),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Module 2: State Management",
-  //     contents: [
-  //       {
-  //         id: 3,
-  //         type: "video",
-  //         title: "Understanding React State",
-  //         url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-  //         description: "Deep dive into React state management.",
-  //         onSelect: (content) => setSelectedContent(content),
-  //       },
-  //       {
-  //         id: 4,
-  //         type: "pdf",
-  //         title: "State Management Best Practices",
-  //         url: "https://mozilla.github.io/pdf.js/web/viewer.html",
-  //         onSelect: (content) => setSelectedContent(content),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Module 3: Advanced Concepts",
-  //     contents: [
-  //       {
-  //         id: 5,
-  //         type: "video",
-  //         title: "React Hooks in Depth",
-  //         url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-  //         description: "Master React Hooks and their use cases.",
-  //         onSelect: (content) => setSelectedContent(content),
-  //       },
-  //       {
-  //         id: 6,
-  //         type: "pdf",
-  //         title: "Advanced React Patterns",
-  //         url: "https://mozilla.github.io/pdf.js/web/viewer.html",
-  //         onSelect: (content) => setSelectedContent(content),
-  //       },
-  //     ],
-  //   },
-  // ];
-
   const toggleDropdown = (moduleId) => {
-    if (openModule === moduleId) {
-      setOpenModule(null); // Close dropdown if it's already open
-    } else {
-      setOpenModule(moduleId); // Open dropdown
+    setOpenModule(openModule === moduleId ? null : moduleId);
+  };
+
+  // Function to update module completion status in the backend
+  const updateModuleCompletionStatus = async (userCourseModuleId) => {
+    const url = `http://localhost:8333/api/user-course-modules/update-module-progress`;
+    const token = localStorage.getItem("authToken");
+
+    const data = {
+      userCourseModuleId: userCourseModuleId,
+      moduleCompleted: true, // Pass the completion status only
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const updatedModule = await response.json();
+        console.log(
+          "Module completion status updated successfully:",
+          updatedModule
+        );
+        // Update course progress after module completion
+        updateCourseProgress();
+      } else {
+        console.error(
+          "Failed to update module completion status:",
+          response.status
+        );
+      }
+    } catch (error) {
+      console.error("Error updating module completion status:", error);
+    }
+  };
+
+  // Function to update the course progress based on completed modules
+  const updateCourseProgress = () => {
+    const completedModules = modules.filter(
+      (module) => module.moduleCompleted
+    ).length +1;
+    console.log("total length " + modules.length);
+    console.log("completd " + completedModules);
+    console.log(modules);
+    const totalModules = modules.length;
+    const progress = (completedModules / totalModules) * 100;
+    
+
+    setCourseProgress(progress);
+
+    // Check if the course is fully completed
+    if (progress === 100) {
+      setIsCourseCompleted(true);
+      updateCourseCompletionStatus();
+    }
+    updateCourseCompletionStatus();
+  };
+
+  // Function to update the course completion status in the backend
+  const updateCourseCompletionStatus = async () => {
+    const url = `http://localhost:8333/api/user-courses/update-course-progress`;
+    const token = localStorage.getItem("authToken");
+
+    const data = {
+      userCourseId: UCID,
+      progress: courseProgress,
+      isCompleted: isCourseCompleted,
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const updatedCourse = await response.json();
+        console.log("Course progress updated successfully:", updatedCourse);
+      } else {
+        console.error("Failed to update course progress:", response.status);
+      }
+    } catch (error) {
+      console.error("Error updating course progress:", error);
+    }
+  };
+
+  // Function to handle content completion and check module completion
+  const markContentCompleted = (userCourseModuleId, contentId) => {
+    const l = modules.filter(
+      (module) => module.userCourseModuleId == userCourseModuleId
+    );
+    console.log( l);
+    if (!l[0].moduleCompleted) {
+      setModules((prevModules) =>
+        prevModules.map((module) => {
+          if (module.userCourseModuleId === userCourseModuleId) {
+            const updatedContentList = module.contentList.map((content) =>
+              content.contentId === contentId
+                ? { ...content, completed: true }
+                : content
+            );
+
+            // Check if all contents in the module are completed
+            const moduleCompleted = updatedContentList.every(
+              (content) => content.completed
+            );
+
+            // Update backend if the module is now completed
+            if (moduleCompleted && !module.moduleCompleted) {
+              updateModuleCompletionStatus(userCourseModuleId);
+            }
+
+            return {
+              ...module,
+              contentList: updatedContentList,
+              moduleCompleted: moduleCompleted,
+            };
+          }
+
+          return module;
+        })
+      );
+
+      // Update course progress
+      updateCourseProgress();
+
+      const selectedModule = modules.find(
+        (module) => module.userCourseModuleId === userCourseModuleId
+      );
+
+      const selectedContent = selectedModule?.contentList.find(
+        (content) => content.contentId === contentId
+      );
+
+      // Set the selected content state
+      setSelectedContent(selectedContent);
     }
   };
 
@@ -157,6 +203,7 @@ function CourseContent() {
         }}
       >
         <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>
+          
           Course: {cName}
         </h1>
       </header>
@@ -180,11 +227,11 @@ function CourseContent() {
             Modules
           </h2>
           {modules.map((module) => (
-            <div key={module.id} style={{ marginBottom: "15px" }}>
+            <div key={module.moduleId} style={{ marginBottom: "15px" }}>
               <button
-                onClick={() => toggleDropdown(module.mooduleId)}
+                onClick={() => toggleDropdown(module.moduleId)}
                 style={{
-                  backgroundColor: "#00509e",
+                  backgroundColor: module.completed ? "#228B22" : "#00509e", // Change color if completed
                   color: "#fff",
                   width: "100%",
                   padding: "12px",
@@ -197,9 +244,9 @@ function CourseContent() {
                   transition: "background-color 0.3s",
                 }}
               >
-                {module.moduleTitle}
+                {module.moduleTitle} {module.moduleCompleted && "✓"}
               </button>
-              {openModule === module.id && (
+              {openModule === module.moduleId && (
                 <ul
                   style={{
                     listStyleType: "none",
@@ -210,56 +257,83 @@ function CourseContent() {
                   {module.contentList.map((content) => (
                     <li
                       key={content.contentId}
+                      onClick={() =>
+                        markContentCompleted(
+                          module.userCourseModuleId,
+                          content.contentId
+                        )
+                      }
                       style={{
                         cursor: "pointer",
                         color: content.type === "video" ? "#333" : "#555",
                         padding: "8px 12px",
                         borderRadius: "4px",
-                        backgroundColor: "#f9f9f9",
+                        backgroundColor: content.completed
+                          ? "#e0ffe0"
+                          : "#f9f9f9",
                         border: "1px solid #ddd",
                         margin: "5px 0",
                       }}
-                      onClick={() => setSelectedContent(content)}
                     >
-                      {content.ContentType === "video" ? "🎬 " : "📄 "} {content.contentTitle}
+                      {content.contentType === "video" ? "🎬 " : "📄 "}{" "}
+                      {content.contentTitle}
                     </li>
                   ))}
                 </ul>
               )}
+              
             </div>
           ))}
-        </div>
+          <button
+            style={{
+              backgroundColor: '#28a745',
+              color: '#fff',
+              width: '100%',
+              padding: '12px',
+              borderRadius: '5px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '16px',
+              marginTop: '20px',
+              boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+              transition: 'background-color 0.3s',
+            }}
+            onClick={() => navigate("/feedback/"+UCID)}
+          >
+            Feedback
+          </button>
 
-        {/* Main Content Area */}
+        </div>
+        
+
+        {/* Content Viewer */}
         <div
           style={{
             flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
+            backgroundColor: "#ffffff",
             padding: "20px",
             overflowY: "auto",
-            backgroundColor: "#ffffff",
+            boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
           }}
         >
-          {selectedContent ? (
-            <ContentViewer content={selectedContent} />
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#888",
-                fontSize: "18px",
-                height: "100%",
-              }}
-            >
-              <p>Select a module to start learning</p>
-            </div>
+          {selectedContent && (
+            <ContentViewer content={selectedContent} UCID={UCID} />
           )}
         </div>
       </div>
+
+      {/* Footer */}
+      <footer
+        style={{
+          padding: "10px 30px",
+          backgroundColor: "#003366",
+          color: "#fff",
+          textAlign: "center",
+          boxShadow: "0px -2px 5px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <p>&copy; 2024 Course Management System</p>
+      </footer>
     </div>
   );
 }
