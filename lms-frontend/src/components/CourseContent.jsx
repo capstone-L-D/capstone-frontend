@@ -9,7 +9,8 @@ function CourseContent() {
   const [modules, setModules] = useState([]);
   const [courseProgress, setCourseProgress] = useState(0); // Track the course progress percentage
   const [isCourseCompleted, setIsCourseCompleted] = useState(false); // Track if the course is completed
-  const { cName, UCID } = useParams();
+  const { cName, UCID,cId } = useParams();
+  console.log(cId);
   const navigate = useNavigate()
 
   const url = `http://localhost:8333/api/user-course-modules/modules/${UCID}`;
@@ -284,6 +285,24 @@ function CourseContent() {
               
             </div>
           ))}
+          <button
+            style={{
+              backgroundColor: '#4a90e2',
+              color: '#fff',
+              width: '100%',
+              padding: '12px',
+              borderRadius: '5px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '16px',
+              marginTop: '20px',
+              boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+              transition: 'background-color 0.3s',
+            }}
+            onClick={() => navigate("/Assessment/"+cId+"/"+UCID)}
+          >
+            Assessment
+          </button>
           <button
             style={{
               backgroundColor: '#28a745',

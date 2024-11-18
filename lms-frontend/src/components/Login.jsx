@@ -16,7 +16,12 @@ function Login() {
     localStorage.setItem("User", responseData.username);
     localStorage.setItem("UserMail", responseData.userMail);
     window.alert(`Hi, ${responseData.username}, you are logged in`);
+    if(responseData.role=="USER"){
     navigate("/dashboard");
+    }
+    else{
+      navigate("/admin")
+    }
   };
 
   const handleSubmit = async (e) => {

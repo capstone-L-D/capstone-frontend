@@ -4,6 +4,7 @@ function CourseCard({ course }) {
   const navigate = useNavigate();
   const UCID=course.userCourseId;
   const cName =course.courseTitle;
+  const cId=course.courseId;
   
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -25,7 +26,7 @@ function CourseCard({ course }) {
           </div>
           <button
             className="text-blue-600 hover:text-blue-700"
-            onClick={() => navigate("/courseContent/" + UCID+"/"+cName)}
+            onClick={() => navigate("/courseContent/" + UCID+"/"+cName+"/"+cId)}
           >
             Continue
           </button>

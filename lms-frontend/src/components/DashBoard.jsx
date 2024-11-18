@@ -3,6 +3,7 @@ import CourseCard from "./CourseCard";
 import { FiUser, FiSearch, FiMenu } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import RemainingCourseCard from "./RmainingCourseCard";
 
 function DashBoard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -20,45 +21,42 @@ const [allCourses,setAllCourses]=useState([])
   
 
   const loadAllCourses = async () => {
-    try{
-    const UserData = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`, // Include the JWT token in the header
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setCourses([...data]);
-
-        const inProgressCount = data.filter((course) => !course.isCompleted).length;
-        const completedCount = data.filter((course) => course.isCompleted).length;
-  
-        // Set these counts in state
-        setInProgressCount(inProgressCount);
-        setCompletedCount(completedCount);
-        console.log(data);
-      });
-      await fetch(url2, {
+    try {
+      // Fetch user enrolled courses
+      const userCoursesResponse = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`, // Include the JWT token in the header
         },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          // Filter out courses that are already in userCoursesData based on courseId
-          const filteredCourses = data.filter(
-            (course) => ! courses.some((userCourse) => userCourse.courseId === course.courseId)
-          );
-    
-          setAllCourses([...filteredCourses]); // Update the state with filtered courses
-    
-          console.log(filteredCourses);
-        });}
-        catch (error) {
-          console.error("Error loading courses:", error);
-        }
-      
+      });
+      const userCoursesData = await userCoursesResponse.json();
+      console.log(userCoursesData);
+      setCourses(userCoursesData);
+  
+      // Calculate progress counts
+      const inProgress = userCoursesData.filter((course) => !course.isCompleted).length;
+      const completed = userCoursesData.filter((course) => course.isCompleted).length;
+      setInProgressCount(inProgress);
+      setCompletedCount(completed);
+  
+      // Fetch all courses
+      const allCoursesResponse = await fetch(url2, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the JWT token in the header
+        },
+      });
+      const allCoursesData = await allCoursesResponse.json();
+  
+      // Filter new courses
+      const newCourses = allCoursesData.filter(
+        (course) => !userCoursesData.some((userCourse) => userCourse.courseId === course.courseId)
+      );
+      console.log(newCourses)
+      setAllCourses(newCourses);
+    } catch (error) {
+      console.error("Error loading courses:", error);
+    }
   };
+  
   useEffect(() => {
     loadAllCourses();
   }, []);
@@ -165,7 +163,7 @@ const [allCourses,setAllCourses]=useState([])
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {allCourses.map((course) => (
-              <CourseCard key={course.courseId} course={course} />
+              <RemainingCourseCard key={course.courseId} course={course}  loadAllCourses={loadAllCourses}/>
             ))}
           </div>
         </section>

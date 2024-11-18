@@ -15,8 +15,11 @@ import RegisterPage from "./components/register/Register";
 import HomePage from "./components/HomePage";
 import Feedback from "./components/Feedback";
 import ModuleForm from "./components/ModuleForm";
-import CourseForm from "./components/AddCourse/CourseForm";
+
 import AddModuleMain from "./components/AddCourse/AddModuleMain";
+import AdminHome from "./components/AdminHome";
+import Assessment from "./components/Assessment/Assessment";
+import AssessmentStart from "./components/Assessment/AssessmentStart";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -39,12 +42,15 @@ function App() {
           ></Route>
           <Route path="/dashboard" element={<DashBoard />}></Route>
           <Route
-            path="/courseContent/:UCID/:cName"
+            path="/courseContent/:UCID/:cName/:cId"
             element={<CourseContent></CourseContent>}
           ></Route>
           <Route path="/register" element={<RegisterPage />}></Route>
-          <Route path="/madd"  element={<ModuleForm />}></Route>
-          <Route path="/courseAdd"  element={<AddModuleMain/>}></Route>
+          <Route path="/madd" element={<ModuleForm />}></Route>
+          <Route path="/courseAdd" element={<AddModuleMain />}></Route>
+          <Route path="/Admin" element={<AdminHome />}></Route>
+          <Route path="/Assessment/:cId/:UCID" element={<AssessmentStart />}></Route>
+
           {/* <Route path="/" element={<Login/>}></Route> */}
         </Routes>
       </BrowserRouter>

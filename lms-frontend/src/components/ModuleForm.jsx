@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Plus, Trash2, Save } from 'lucide-react';
 
 function ModuleForm() {
-    const [error,setError]=useState();
-    const token = localStorage.getItem("authToken");
+  const [error, setError] = useState();
+  const [submissionMessage, setSubmissionMessage] = useState(''); // State for the submission message
+  const token = localStorage.getItem("authToken");
   const [module, setModule] = useState({
     moduleTitle: '',
     moduleDuration: 0,
@@ -34,35 +35,42 @@ function ModuleForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(JSON.stringify( module));
+    setSubmissionMessage(''); // Clear the previous message
+    console.log(JSON.stringify(module));
     try {
-        // Await the fetch request to complete and get the response
-        const response = await fetch("http://localhost:8333/modules/create", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(
-            module
-          ),
-        });
-        console.log(response)
-    } catch (err) {
-        if (err.response) {
-          setError(
-            `cannot update: ${
-              err.response.data.message || err.response.statusText
-            }`
-          );
-        } else if (err.request) {
-          setError("No response received from the server. Please try again.");
-        } else {
-          setError(`Error: ${err.message}`);
-        }
+      const response = await fetch("http://localhost:8333/modules/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(module),
+      });
+      console.log(response)
+      if (response.status==200) {
+        setModule({
+            moduleTitle: '',
+            moduleDuration: 0,
+            contents: [{ contentTitle: '', contentType: '', contentUrl: '' }],
+          })
+        setSubmissionMessage('Module created successfully!'); // Success message
+       
+      } else {
+        const responseData = await response.json();
+       
+        setSubmissionMessage(`Failed to create module: ${responseData.message || response.statusText}`);
       }
-      
-    // Here you can send the data to your backend
+    } catch (err) {
+      if (err.response) {
+        setSubmissionMessage(
+          `Failed to create module: ${err.response.data.message || err.response.statusText}`
+        );
+      } else if (err.request) {
+        setSubmissionMessage("No response received from the server. Please try again.");
+      } else {
+        setSubmissionMessage(`Error: ${err.message}`);
+      }
+    }
   };
 
   return (
@@ -183,6 +191,19 @@ function ModuleForm() {
               Save Module
             </button>
           </div>
+
+          {/* Display the submission message */}
+          {submissionMessage && (
+            <div
+              className={`mt-4 text-center ${
+                submissionMessage.startsWith("Failed")
+                  ? "text-red-600"
+                  : "text-green-600"
+              }`}
+            >
+              {submissionMessage}
+            </div>
+          )}
         </form>
       </div>
     </div>
