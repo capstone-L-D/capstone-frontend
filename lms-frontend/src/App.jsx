@@ -17,20 +17,17 @@ import Feedback from "./components/Feedback";
 import ModuleForm from "./components/ModuleForm";
 
 import AddModuleMain from "./components/AddCourse/AddModuleMain";
-import AdminHome from "./components/AdminHome";
+import AdminHome from "./components/Admin/AdminHome";
 import Assessment from "./components/Assessment/Assessment";
 import AssessmentStart from "./components/Assessment/AssessmentStart";
+import AdminCourses from "./components/Admin/AdminCourses";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      {/* <DashBoard></DashBoard>     */}
-      {/*      
-       <ContentViewer></ContentViewer> 
-       <CourseContent></CourseContent> */}
-      {/* <UserSignUpPage></UserSignUpPage> */}
+   
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage></HomePage>}></Route>
@@ -50,6 +47,8 @@ function App() {
           <Route path="/courseAdd" element={<AddModuleMain />}></Route>
           <Route path="/Admin" element={<AdminHome />}></Route>
           <Route path="/Assessment/:cId/:UCID" element={<AssessmentStart />}></Route>
+          <Route path="/AdminCourses" element={<AdminCourses />}></Route>
+          
 
           {/* <Route path="/" element={<Login/>}></Route> */}
         </Routes>

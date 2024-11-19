@@ -4,14 +4,15 @@ import { FiUser, FiSearch, FiMenu } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RemainingCourseCard from "./RmainingCourseCard";
+import UserNavbar from "./UserNavbar";
 
 function DashBoard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [courses, setCourses] = useState([]);
   const [inProgressCount, setInProgressCount] = useState(0);
-const [completedCount, setCompletedCount] = useState(0);
-const [allCourses,setAllCourses]=useState([])
+  const [completedCount, setCompletedCount] = useState(0);
+  const [allCourses,setAllCourses]=useState([])
   const token = localStorage.getItem("authToken");
   const userId = localStorage.getItem("userId");
 
@@ -68,6 +69,8 @@ const [allCourses,setAllCourses]=useState([])
   console.log(localStorage.getItem("userName"));
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <UserNavbar />
+      
       {/* Sidebar Toggle Button */}
       <button
         className="p-4 fixed top-4 left-4 z-20 text-gray-600 hover:text-gray-800 focus:outline-none"
@@ -132,15 +135,15 @@ const [allCourses,setAllCourses]=useState([])
 
         {/* Progress Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 transform hover:scale-105">
             <h3 className="text-gray-500 text-sm mb-1">Courses in Progress</h3>
             <p className="text-3xl font-bold text-indigo-600">{inProgressCount}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 transform hover:scale-105">
             <h3 className="text-gray-500 text-sm mb-1">Completed Courses</h3>
             <p className="text-3xl font-bold text-indigo-600">{completedCount}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 transform hover:scale-105">
             <h3 className="text-gray-500 text-sm mb-1">Certificates Earned</h3>
             <p className="text-3xl font-bold text-indigo-600">0</p>
           </div>
@@ -152,8 +155,14 @@ const [allCourses,setAllCourses]=useState([])
             Continue Learning
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => (
-              <CourseCard key={course.courseId} course={course} />
+            {courses.map((course, index) => (
+              <div 
+                key={course.courseId}
+                className="transform transition-all duration-300 hover:scale-105 animate-fadeIn"
+                style={{animationDelay: `${index * 100}ms`}}
+              >
+                <CourseCard course={course} />
+              </div>
             ))}
           </div>
         </section>
@@ -162,8 +171,14 @@ const [allCourses,setAllCourses]=useState([])
             New Courses
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allCourses.map((course) => (
-              <RemainingCourseCard key={course.courseId} course={course}  loadAllCourses={loadAllCourses}/>
+            {allCourses.map((course, index) => (
+              <div
+                key={course.courseId}
+                className="transform transition-all duration-300 hover:scale-105 animate-fadeIn"
+                style={{animationDelay: `${index * 100}ms`}}
+              >
+                <RemainingCourseCard course={course} loadAllCourses={loadAllCourses}/>
+              </div>
             ))}
           </div>
         </section>

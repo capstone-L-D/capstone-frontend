@@ -20,41 +20,53 @@ function Assessment({ assessment, userCourseAssessment }) {
   const handleSubmit = async () => {
     setIsSubmitted(true);
     setIsTimerActive(false);
-    console.log(selectedAnswers);
-    console.log(userCourseAssessment);
+    
+    console.log("Selected answers:", selectedAnswers);
+    console.log("User course assessment:", userCourseAssessment);
     try {
-      // Await the fetch request to complete and get the response
-      const response = await fetch("http://localhost:7081/user-answers", {
+      const transformedSelectedOptions = selectedAnswers.map(answer => ({
+        optionId: answer.selectedOption.optionId,
+        text: answer.selectedOption.text, 
+        isCorrect: answer.selectedOption.isCorrect, 
+      }));
+      
+      console.log(" answers:", transformedSelectedOptions);
+  
+      console.log("Transformed options:", transformedSelectedOptions);
+  
+      const response = await fetch("http://localhost:7082/user-course-assessments/complete", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", 
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          userCourseAssessmentId : userCourseAssessment.userCourseAssessmentId,
-          selectedOptions : selectedAnswers,
+          userCourseAssessmentId: userCourseAssessment.id,
+          selectedOptions: transformedSelectedOptions,
         }),
       });
-    }catch (err) {
-      if (err.response) {
-        setError(
-          `Login failed: ${
-            err.response.data.message || err.response.statusText
-          }`
-        );
-      } else if (err.request) {
-        setError("No response received from the server. Please try again.");
+  
+      // Check content type before parsing JSON
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        console.log("Submission successful:", data);
       } else {
-        setError(`Error: ${err.message}`);
+        const text = await response.text();
+        throw new Error(`Unexpected response format: ${text}`);
       }
+    } catch (err) {
+      console.error("Error submitting answers:", err);
+      setError(err.message);
     }
-
-
-    console.log('Selected Answers:', selectedAnswers.map(answer => answer.selectedOption));
   };
 
   const handleTimeUp = () => {
     handleSubmit();
+  };
+
+  const handleGoBack = () => {
+    window.history.back();
   };
 
   return (
@@ -93,7 +105,12 @@ function Assessment({ assessment, userCourseAssessment }) {
               <CheckCircle className="w-6 h-6" />
               <h2 className="text-xl font-semibold">Assessment Submitted</h2>
             </div>
-            
+            <button
+              onClick={handleGoBack}
+              className="mt-4 w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Go Back
+            </button>
           </div>
         )}
       </div>
