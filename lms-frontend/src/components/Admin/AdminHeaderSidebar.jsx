@@ -14,7 +14,10 @@ function AdminHeaderSidebar({ children, onNavigateToCourses, onNavigateToUsers }
   };
 
   const handleLogout = () => {
-    console.log("Logging out...");
+
+      window.localStorage.clear();
+      window.location.href = "/";
+    
   };
 
   return (

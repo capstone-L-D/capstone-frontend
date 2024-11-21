@@ -9,27 +9,7 @@ import {
 } from "lucide-react";
 import ModuleSelect from "./ModuleSelect";
 
-// Sample modules data
-// const AVAILABLE_MODULES = [
-//   {
-//     moduleId: "mod-001",
-//     moduleTitle: "Introduction to JavaScript",
-//     moduleDuration: "2 hours",
 
-//   },
-//   {
-//     moduleId: "mod-002",
-//     moduleTitle: "Advanced JavaScript Concepts",
-//     moduleDuration: "3 hours",
-
-//   },
-//   {
-//     moduleId: "mod-003",
-//     moduleTitle: "Working with JavaScript Frameworks",
-//     moduleDuration: "4 hours",
-
-//   }
-// ];
 
 function AddModuleMain() {
   const [formData, setFormData] = useState({
@@ -77,7 +57,7 @@ function AddModuleMain() {
     }));
   };
 
-  // Update selected modules when the user selects/deselects modules in the ModuleSelect dropdown
+  
   const handleModuleChange = (selectedModules) => {
     setFormData((prev) => ({
       ...prev,
@@ -87,7 +67,7 @@ function AddModuleMain() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmissionMessage(""); // Clear previous message
+    setSubmissionMessage(""); 
     console.log("Form submitted:", formData);
 
     try {

@@ -9,10 +9,11 @@ function RemainingCourseCard({ course,loadAllCourses }) {
   const uId=localStorage.getItem("userId")
   const [error,setError]=useState("");
   const token = localStorage.getItem("authToken");
+  const discription = course.courseDescription;
   const handleEnroll = async(e) =>{
     console.log("yes")
     try {
-        // Await the fetch request to complete and get the response
+       
         const response = await fetch("http://localhost:8333/api/user-courses/enroll", {
           method: "POST",
           headers: {
@@ -57,7 +58,9 @@ function RemainingCourseCard({ course,loadAllCourses }) {
         <h3 className="text-lg font-semibold text-gray-800">
           {course.courseTitle}
         </h3>
-       
+        <p className="text-sm text-gray-600 mt-2 line-clamp-2 h-10">
+          {discription}
+        </p>
         <div className="mt-4 flex items-center justify-between">
           <div className="bg-blue-100 rounded-full px-3 py-1">
             <span className="text-sm text-blue-600">
@@ -65,7 +68,7 @@ function RemainingCourseCard({ course,loadAllCourses }) {
             </span>
           </div>
           <button
-            className="text-blue-600 hover:text-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             onClick={handleEnroll}
           >
             Enroll

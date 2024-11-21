@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { BookOpen, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
+import { toast } from "react-hot-toast";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,13 +12,15 @@ function Login() {
   const navigate = useNavigate();
 
   const handleLoginSuccess = (responseData) => {
+    console.log(responseData);
     localStorage.setItem("authToken", responseData.token);
     localStorage.setItem("userId", responseData.id);
     localStorage.setItem("User", responseData.username);
     localStorage.setItem("UserMail", responseData.userMail);
-    window.alert(`Hi, ${responseData.username}, you are logged in`);
+    localStorage.setItem("jobRole", responseData.jobRole);
+    toast.success(`Welcome back, ${responseData.username}!`);
     if(responseData.role=="USER"){
-    navigate("/dashboard");
+      navigate("/dashboard");
     }
     else{
       navigate("/admin")
@@ -37,26 +40,32 @@ function Login() {
           userPassword: password,
         }),
       });
+      
 
       if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.error || "Failed to log in. Please try again.");
+        setError("User credentials are wrong");
+        toast.error("Invalid credentials");
         return;
       }
 
       const responseData = await response.json();
+      console.log("rs",responseData);
       if (responseData) {
         handleLoginSuccess(responseData);
       } else {
         setError("Invalid response from server. Please try again.");
+        toast.error("Invalid response from server");
       }
     } catch (err) {
       if (err.response) {
-        setError(`Login failed: ${err.response.data.message || err.response.statusText}`);
+        setError("User credentials are wrong");
+        toast.error("Invalid credentials");
       } else if (err.request) {
         setError("No response received from the server. Please try again.");
+        toast.error("Server not responding");
       } else {
-        setError(`Error: ${err.message}`);
+        setError("User credentials are wrong");
+        toast.error("Invalid credentials");
       }
     }
   };
@@ -142,21 +151,7 @@ function Login() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                    Remember me
-                  </label>
-                </div>
-                <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-500">
-                  Forgot password?
-                </a>
-              </div>
+             
 
               <button
                 type="submit"

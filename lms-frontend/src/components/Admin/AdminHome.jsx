@@ -1,18 +1,18 @@
 
-
-
-import React from "react";
+import React, { useState } from "react";
 import AdminHeaderSidebar from "./AdminHeaderSidebar";
-import { useNavigate } from "react-router-dom";
+import AddModuleMain from "../AddCourse/AddModuleMain";
+import ModuleForm from "../ModuleForm";
 
 function AdminHome() {
-  const navigate = useNavigate();
+  const [activeComponent, setActiveComponent] = useState(null);
+
   const handleAddCourse = () => {
-   navigate("/courseAdd")
+    setActiveComponent("AddCourse");
   };
 
   const handleAddModule = () => {
-    navigate("/madd")
+    setActiveComponent("AddModule");
   };
 
   const handleNavigateToCourses = () => {
@@ -30,7 +30,7 @@ function AdminHome() {
     >
       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Admin Actions</h2>
-        <p className="text-gray-600 mb-8">Select an option below to manage the LMS platform:</p>
+        <p className="text-gray-600 mb-8">Select an option below to manage the  platform:</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <button
             onClick={handleAddCourse}
@@ -44,6 +44,10 @@ function AdminHome() {
           >
             Add Module
           </button>
+        </div>
+        <div className="mt-8">
+          {activeComponent === "AddCourse" && <AddModuleMain />}
+          {activeComponent === "AddModule" && <ModuleForm />}
         </div>
       </div>
     </AdminHeaderSidebar>

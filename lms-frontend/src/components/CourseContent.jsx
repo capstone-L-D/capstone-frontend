@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import ModuleSidebar from "./ModuleSidebar";
 import ContentViewer from "../components/ContentViewer";
 import { useNavigate, useParams } from "react-router-dom";
+import Feedback from "./Feedback";
+import AssessmentStart from "./Assessment/AssessmentStart";
 
 function CourseContent() {
   const [selectedContent, setSelectedContent] = useState(null);
@@ -9,7 +11,9 @@ function CourseContent() {
   const [modules, setModules] = useState([]);
   const [courseProgress, setCourseProgress] = useState(0); // Track the course progress percentage
   const [isCourseCompleted, setIsCourseCompleted] = useState(false); // Track if the course is completed
-  const { cName, UCID,cId } = useParams();
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [showAssessment, setShowAssessment] = useState(false);
+  const { cName, UCID, cId } = useParams();
   console.log(cId);
   const navigate = useNavigate()
 
@@ -42,7 +46,7 @@ function CourseContent() {
 
     const data = {
       userCourseModuleId: userCourseModuleId,
-      moduleCompleted: true, // Pass the completion status only
+      moduleCompleted: true,
     };
 
     try {
@@ -57,17 +61,38 @@ function CourseContent() {
 
       if (response.ok) {
         const updatedModule = await response.json();
-        console.log(
-          "Module completion status updated successfully:",
-          updatedModule
+        console.log("Module completion status updated successfully:", updatedModule);
+        
+        // Update modules state to reflect completion
+        setModules(prevModules => 
+          prevModules.map(module => 
+            module.userCourseModuleId === userCourseModuleId 
+              ? {...module, moduleCompleted: true}
+              : module
+          )
         );
-        // Update course progress after module completion
-        updateCourseProgress();
+        
+        // Calculate and update course progress
+        const updatedModules = modules.map(module =>
+          module.userCourseModuleId === userCourseModuleId 
+            ? {...module, moduleCompleted: true}
+            : module
+        );
+        
+        const completedModules = updatedModules.filter(module => module.moduleCompleted).length;
+        const progress = (completedModules / updatedModules.length) * 100;
+        setCourseProgress(progress);
+
+        // Check if course is completed
+        if (progress === 100) {
+          setIsCourseCompleted(true);
+          updateCourseCompletionStatus(progress, true);
+        } else {
+          updateCourseCompletionStatus(progress, false);
+        }
+
       } else {
-        console.error(
-          "Failed to update module completion status:",
-          response.status
-        );
+        console.error("Failed to update module completion status:", response.status);
       }
     } catch (error) {
       console.error("Error updating module completion status:", error);
@@ -76,35 +101,29 @@ function CourseContent() {
 
   // Function to update the course progress based on completed modules
   const updateCourseProgress = () => {
-    const completedModules = modules.filter(
-      (module) => module.moduleCompleted
-    ).length +1;
-    console.log("total length " + modules.length);
-    console.log("completd " + completedModules);
-    console.log(modules);
+    const completedModules = modules.filter(module => module.moduleCompleted).length;
     const totalModules = modules.length;
     const progress = (completedModules / totalModules) * 100;
     
-
     setCourseProgress(progress);
 
-    // Check if the course is fully completed
     if (progress === 100) {
       setIsCourseCompleted(true);
-      updateCourseCompletionStatus();
+      updateCourseCompletionStatus(progress, true);
+    } else {
+      updateCourseCompletionStatus(progress, false);
     }
-    updateCourseCompletionStatus();
   };
 
   // Function to update the course completion status in the backend
-  const updateCourseCompletionStatus = async () => {
+  const updateCourseCompletionStatus = async (progress, isCompleted) => {
     const url = `http://localhost:8333/api/user-courses/update-course-progress`;
     const token = localStorage.getItem("authToken");
 
     const data = {
       userCourseId: UCID,
-      progress: courseProgress,
-      isCompleted: isCourseCompleted,
+      progress: progress,
+      isCompleted: isCompleted,
     };
 
     try {
@@ -130,55 +149,41 @@ function CourseContent() {
 
   // Function to handle content completion and check module completion
   const markContentCompleted = (userCourseModuleId, contentId) => {
-    const l = modules.filter(
-      (module) => module.userCourseModuleId == userCourseModuleId
-    );
-    console.log( l);
-    if (!l[0].moduleCompleted) {
-      setModules((prevModules) =>
-        prevModules.map((module) => {
-          if (module.userCourseModuleId === userCourseModuleId) {
-            const updatedContentList = module.contentList.map((content) =>
-              content.contentId === contentId
-                ? { ...content, completed: true }
-                : content
-            );
+    setModules(prevModules =>
+      prevModules.map(module => {
+        if (module.userCourseModuleId === userCourseModuleId) {
+          // Update content completion status
+          const updatedContentList = module.contentList.map(content =>
+            content.contentId === contentId
+              ? { ...content, completed: true }
+              : content
+          );
 
-            // Check if all contents in the module are completed
-            const moduleCompleted = updatedContentList.every(
-              (content) => content.completed
-            );
+          // Check if all contents in module are completed
+          const allContentsCompleted = updatedContentList.every(content => content.completed);
 
-            // Update backend if the module is now completed
-            if (moduleCompleted && !module.moduleCompleted) {
-              updateModuleCompletionStatus(userCourseModuleId);
-            }
-
-            return {
-              ...module,
-              contentList: updatedContentList,
-              moduleCompleted: moduleCompleted,
-            };
+          // If all contents are completed and module wasn't previously completed
+          if (allContentsCompleted && !module.moduleCompleted) {
+            updateModuleCompletionStatus(userCourseModuleId);
           }
 
-          return module;
-        })
-      );
+          return {
+            ...module,
+            contentList: updatedContentList,
+            moduleCompleted: module.moduleCompleted || allContentsCompleted // Keep existing completion status or update if newly completed
+          };
+        }
+        return module;
+      })
+    );
 
-      // Update course progress
-      updateCourseProgress();
-
-      const selectedModule = modules.find(
-        (module) => module.userCourseModuleId === userCourseModuleId
-      );
-
-      const selectedContent = selectedModule?.contentList.find(
-        (content) => content.contentId === contentId
-      );
-
-      // Set the selected content state
-      setSelectedContent(selectedContent);
-    }
+    // Set selected content
+    const selectedModule = modules.find(module => module.userCourseModuleId === userCourseModuleId);
+    const selectedContent = selectedModule?.contentList.find(content => content.contentId === contentId);
+    
+    setSelectedContent(selectedContent);
+    setShowFeedback(false);
+    setShowAssessment(false);
   };
 
   return (
@@ -203,8 +208,32 @@ function CourseContent() {
           boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
         }}
       >
+        <button
+          style={{
+            backgroundColor: 'transparent',
+            color: '#fff',
+            border: '2px solid #fff',
+            padding: '8px 16px',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginRight: '20px',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseOver={(e) => {
+            e.target.style.backgroundColor = '#fff';
+            e.target.style.color = '#003366';
+          }}
+          onMouseOut={(e) => {
+            e.target.style.backgroundColor = 'transparent';
+            e.target.style.color = '#fff';
+          }}
+          onClick={() => navigate("/dashboard")}
+        >
+          ← Dashboard
+        </button>
         <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>
-          
           Course: {cName}
         </h1>
       </header>
@@ -299,7 +328,11 @@ function CourseContent() {
               boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
               transition: 'background-color 0.3s',
             }}
-            onClick={() => navigate("/Assessment/"+cId+"/"+UCID)}
+            onClick={() => {
+              setSelectedContent(null);
+              setShowFeedback(false);
+              setShowAssessment(true);
+            }}
           >
             Assessment
           </button>
@@ -317,7 +350,11 @@ function CourseContent() {
               boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
               transition: 'background-color 0.3s',
             }}
-            onClick={() => navigate("/feedback/"+UCID)}
+            onClick={() => {
+              setSelectedContent(null);
+              setShowFeedback(true);
+              setShowAssessment(false);
+            }}
           >
             Feedback
           </button>
@@ -335,8 +372,12 @@ function CourseContent() {
             boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
           }}
         >
-          {selectedContent && (
-            <ContentViewer content={selectedContent} UCID={UCID} />
+          {showFeedback ? (
+            <Feedback />
+          ) : showAssessment ? (
+            <AssessmentStart />
+          ) : (
+            selectedContent && <ContentViewer content={selectedContent} UCID={UCID} />
           )}
         </div>
       </div>

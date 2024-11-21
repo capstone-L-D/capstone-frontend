@@ -26,7 +26,7 @@ function ContentViewer({ content }) {
       );
     }
   
-    if (content.contentType === 'pdf') {
+    else {
       return (
         <div className="h-full flex flex-col">
           <iframe

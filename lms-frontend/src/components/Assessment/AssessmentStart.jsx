@@ -3,37 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Timer as TimerIcon, Book, Award, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import Assessment from './Assessment';
 
-// Using the same sample assessment data structure
-// const assessment = {
-//   _id: "assessment_101",
-//   title: "Java Basics",
-//   totalScore: 100,
-//   passScore: 60,
-//   timeLimit: 30,
-//   description: "This assessment tests your knowledge of basic Java programming concepts.",
-//   instructions: [
-//     "Read each question carefully before answering",
-//     "You cannot go back to previous questions once answered", 
-//     "The assessment will auto-submit when the time limit is reached",
-//     "Ensure you have a stable internet connection"
-//   ],
-  // questions: [
-    
-  //     {
-  //       questionId: "question_201",
-  //       text: "What is Java?",
-  //       type: "Multiple Choice",
-  //       points: 10,
-  //       options: [
-  //         { optionId: "option_301", text: "Programming Language", isCorrect: true },
-  //         { optionId: "option_302", text: "Database", isCorrect: false }
-  //       ]
-  //     }
-  // ]
-// };
-
 function AssessmentStart() {
-  
+  const navigate = useNavigate();
   const [assessment, setAssessment] = useState({
     title: '',
     description: '',
@@ -71,6 +42,10 @@ function AssessmentStart() {
       
       try {
         const assessmentData = JSON.parse(responseText);
+        if (!assessmentData || Object.keys(assessmentData).length === 0) {
+          setError("No assessment available for this course yet.");
+          return;
+        }
         setAssessment(assessmentData);
       } catch (parseError) {
         console.error('Failed to parse response:', responseText);
@@ -122,8 +97,6 @@ function AssessmentStart() {
     }
   };
 
-  
-
   if (showAssessment) {
     return <Assessment assessment={assessment} userCourseAssessment={userCourseAssessment} />;
   }
@@ -132,8 +105,14 @@ function AssessmentStart() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-md p-8 max-w-md">
-          <h2 className="text-xl font-semibold text-red-600 mb-4">Error Loading Assessment</h2>
+          <h2 className="text-xl font-semibold text-red-600 mb-4">No Assessment Available</h2>
           <p className="text-gray-600">{error}</p>
+          <button
+            onClick={() => navigate(`/course-content/${UCID}`)}
+            className="mt-4 text-sm bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-all duration-300"
+          >
+            Return to Course
+          </button>
         </div>
       </div>
     );
@@ -143,6 +122,14 @@ function AssessmentStart() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto py-8 px-4">
         <div className="bg-white rounded-lg shadow-md p-8">
+          <div className="flex justify-start mb-4">
+            <button
+              onClick={() => navigate(`/course-content/${UCID}`)}
+              className="text-sm bg-transparent hover:bg-blue-600 text-blue-600 hover:text-white py-1 px-3 border border-blue-600 hover:border-transparent rounded transition-all duration-300"
+            >
+              ← Back 
+            </button>
+          </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-6">{assessment.title}</h1>
           
           <p className="text-gray-600 mb-8">{assessment.description}</p>

@@ -38,14 +38,7 @@ function AdminHome() {
                   Courses
                 </button>
               </li>
-              <li>
-                <button
-                  className="w-full text-left px-4 py-2 text-gray-700 font-medium hover:bg-indigo-100 hover:text-indigo-600 rounded-lg focus:outline-none"
-                  onClick={() => console.log("Navigating to Users...")}
-                >
-                  Users
-                </button>
-              </li>
+              
             </ul>
           </nav>
         </aside>

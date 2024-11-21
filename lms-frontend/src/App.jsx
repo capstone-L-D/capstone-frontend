@@ -21,6 +21,9 @@ import AdminHome from "./components/Admin/AdminHome";
 import Assessment from "./components/Assessment/Assessment";
 import AssessmentStart from "./components/Assessment/AssessmentStart";
 import AdminCourses from "./components/Admin/AdminCourses";
+import StudentList from "./components/Admin/EnrollToCourse";
+import AllCourses from "./components/AllCourses";
+
 
 function App() {
   const [count, setCount] = useState(0);
@@ -48,9 +51,10 @@ function App() {
           <Route path="/Admin" element={<AdminHome />}></Route>
           <Route path="/Assessment/:cId/:UCID" element={<AssessmentStart />}></Route>
           <Route path="/AdminCourses" element={<AdminCourses />}></Route>
-          
+          <Route path="/enroll-to-course/:courseId" element={<StudentList />}></Route>
+          <Route path="/all-courses" element={<AllCourses />}></Route>
 
-          {/* <Route path="/" element={<Login/>}></Route> */}
+         
         </Routes>
       </BrowserRouter>
     </>
