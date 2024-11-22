@@ -23,6 +23,8 @@ import AssessmentStart from "./components/Assessment/AssessmentStart";
 import AdminCourses from "./components/Admin/AdminCourses";
 import StudentList from "./components/Admin/EnrollToCourse";
 import AllCourses from "./components/AllCourses";
+import User from "./components/Admin/User";
+import UserProgress from "./components/Admin/UserProgress";
 
 
 function App() {
@@ -53,6 +55,8 @@ function App() {
           <Route path="/AdminCourses" element={<AdminCourses />}></Route>
           <Route path="/enroll-to-course/:courseId" element={<StudentList />}></Route>
           <Route path="/all-courses" element={<AllCourses />}></Route>
+          <Route path="/users" element={<User />}></Route>
+          <Route path="/user-progress/:userId" element={<UserProgress />}></Route>
 
          
         </Routes>

@@ -17,7 +17,7 @@ const Navbar = () => {
             <div className="flex items-center group">
               <GraduationCap className="h-8 w-8 mr-2 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" />
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-                EduLearn
+                Emp-Power
               </span>
             </div>
           </div>

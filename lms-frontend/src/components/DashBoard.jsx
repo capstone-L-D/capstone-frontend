@@ -121,7 +121,7 @@ function DashBoard() {
               Dashboard
             </h1>
             <p className="text-gray-600 mt-2 font-medium">
-              Welcome back! Continue your learning journey
+              Welcome {localStorage.getItem("User")}! Continue your learning journey
             </p>
           </div>
 

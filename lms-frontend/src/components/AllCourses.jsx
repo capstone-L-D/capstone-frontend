@@ -27,7 +27,7 @@ function AllCourses() {
         },
       });
       const userCoursesData = await userCoursesResponse.json();
-      console.log(userCoursesData);
+      console.log("user",userCoursesData);
       setCourses(userCoursesData);
 
       setIsLoading(true);
@@ -42,6 +42,7 @@ function AllCourses() {
       }
 
       const allCoursesData = await allCoursesResponse.json();
+      console.log("all",allCoursesData);
 
       // Filter out courses that user is already enrolled in
       const remainingCourses = allCoursesData.filter(
@@ -50,7 +51,7 @@ function AllCourses() {
             (userCourse) => userCourse.courseId === course.courseId
           )
       );
-
+      console.log("remaining",remainingCourses);
       setAllCourses(remainingCourses);
       setFilteredCourses(remainingCourses);
     } catch (err) {
@@ -145,7 +146,7 @@ function AllCourses() {
                 <input
                   type="text"
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Search courses"
+                  placeholder="Search courses "
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyPress={handleKeyPress}

@@ -89,7 +89,7 @@ function AdminHeaderSidebar({ children, onNavigateToCourses, onNavigateToUsers }
               </li>
               <li>
                 <button
-                  onClick={onNavigateToUsers}
+                  onClick={() => navigate("/users")}
                   style={{
                     width: "100%",
                     textAlign: "left",
@@ -101,6 +101,7 @@ function AdminHeaderSidebar({ children, onNavigateToCourses, onNavigateToUsers }
                     borderRadius: "8px",
                     cursor: "pointer",
                   }}
+
                 >
                   Users
                 </button>

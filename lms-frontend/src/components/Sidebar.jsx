@@ -15,7 +15,7 @@ function Sidebar({ isOpen, onClose }) {
       } transition-transform duration-300 ease-in-out z-30`}
     >
       <div className="p-6 flex justify-between items-center border-b border-gray-200">
-        <h1 className="text-2xl font-bold text-blue-600">LearnHub</h1>
+        <h1 className="text-2xl font-bold text-blue-600">Emp-Power</h1>
         <button onClick={onClose} className="text-gray-600 hover:text-gray-800 focus:outline-none">
           <FiX className="w-6 h-6" />
         </button>
@@ -35,7 +35,7 @@ function Sidebar({ isOpen, onClose }) {
         ))}
       </nav>
       <div className="p-6 text-gray-400 text-sm border-t border-gray-100">
-        © 2024 LearnHub
+        © 2024 Emp-Power
       </div>
     </div>
   );

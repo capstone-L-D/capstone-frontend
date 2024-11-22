@@ -231,7 +231,7 @@ function CourseContent() {
           }}
           onClick={() => navigate("/dashboard")}
         >
-          ← Dashboard
+          Dashboard
         </button>
         <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>
           Course: {cName}

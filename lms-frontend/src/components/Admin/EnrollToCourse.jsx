@@ -21,11 +21,10 @@ function StudentList() {
       });
       const allUsersData = await allUsersResponse.json();
       console.log("allUsersData",allUsersData);
-      setAllUsers(allUsersData);
-  
-      // Calculate progress counts
-   
-    
+      
+      // Filter users with role "USER"
+      const userRoleOnly = allUsersData.filter(user => user.role === "USER");
+      setAllUsers(userRoleOnly);
   
       // Fetch all courses
       const courseUsersResponse = await fetch(url2, {
@@ -38,7 +37,7 @@ function StudentList() {
       console.log("courseUsersData",courseUsersData)
       
       // Filter out users who are already enrolled in the course
-      const newUsersData = allUsersData.filter(
+      const newUsersData = userRoleOnly.filter(
         (user) => !courseUsersData.includes(user.userId)
       );
       console.log("newUsers",newUsersData)

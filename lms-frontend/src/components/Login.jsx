@@ -18,7 +18,7 @@ function Login() {
     localStorage.setItem("User", responseData.username);
     localStorage.setItem("UserMail", responseData.userMail);
     localStorage.setItem("jobRole", responseData.jobRole);
-    toast.success(`Welcome back, ${responseData.username}!`);
+    toast.success(`Welcome , ${responseData.username}!`);
     if(responseData.role=="USER"){
       navigate("/dashboard");
     }
@@ -83,7 +83,7 @@ function Login() {
               <BookOpen className="w-8 h-8" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Welcome Back
+              Welcome !
             </h1>
             <p className="text-gray-600">Access your learning journey</p>
           </div>

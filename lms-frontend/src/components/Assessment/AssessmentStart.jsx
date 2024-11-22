@@ -107,12 +107,7 @@ function AssessmentStart() {
         <div className="bg-white rounded-lg shadow-md p-8 max-w-md">
           <h2 className="text-xl font-semibold text-red-600 mb-4">No Assessment Available</h2>
           <p className="text-gray-600">{error}</p>
-          <button
-            onClick={() => navigate(`/course-content/${UCID}`)}
-            className="mt-4 text-sm bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-all duration-300"
-          >
-            Return to Course
-          </button>
+          
         </div>
       </div>
     );
@@ -123,12 +118,7 @@ function AssessmentStart() {
       <div className="max-w-3xl mx-auto py-8 px-4">
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="flex justify-start mb-4">
-            <button
-              onClick={() => navigate(`/course-content/${UCID}`)}
-              className="text-sm bg-transparent hover:bg-blue-600 text-blue-600 hover:text-white py-1 px-3 border border-blue-600 hover:border-transparent rounded transition-all duration-300"
-            >
-              ← Back 
-            </button>
+            
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-6">{assessment.title}</h1>
           

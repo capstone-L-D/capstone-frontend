@@ -227,6 +227,9 @@ function AddModuleMain() {
                   <BookOpen className="h-4 w-4 mr-2" />
                   Select Modules
                 </label>
+                <p className="text-sm text-gray-500 mb-2">
+                  Note: Only existing modules can be selected. To create a new module, please visit the Add Module section.
+                </p>
                 <ModuleSelect
                   selectedModules={formData.selectedModules}
                   onChange={handleModuleChange}
