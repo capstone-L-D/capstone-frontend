@@ -8,6 +8,8 @@ function StudentList() {
   const[allUsers, setAllUsers] = useState([]);
   const[courseUsers, setCourseUsers] = useState([]);
   const [message, setMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [deadline, setDeadline] = useState('');
   const url="http://localhost:8333/api/auth"
   const url2 = `http://localhost:8333/api/user-courses/user/${courseId}`;
   const token = localStorage.getItem("authToken");
@@ -76,7 +78,8 @@ function StudentList() {
           },
           body: JSON.stringify({
             userId: userId,
-            courseId: courseId
+            courseId: courseId,
+            deadLine: deadline
           }),
         });
       console.log(response);
@@ -89,6 +92,11 @@ function StudentList() {
   } 
 
   const handleEnroll = async () => {
+    if (!deadline) {
+      setMessage('Please select a deadline date');
+      return;
+    }
+
     const results = await Promise.all(
       Array.from(selectedUsers).map(userId => enrollUser(userId))
     );
@@ -97,6 +105,7 @@ function StudentList() {
       setMessage('Users successfully enrolled!');
       loadAllUsers(); // Refresh the user list
       setSelectedUsers(new Set()); // Clear selections
+      setDeadline(''); // Reset deadline
     } else {
       setMessage('Some enrollments failed. Please try again.');
     }
@@ -106,6 +115,11 @@ function StudentList() {
       setMessage('');
     }, 3000);
   }
+
+  const filteredUsers = users.filter(user => 
+    user.userMail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.jobRole.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <AdminHeaderSidebar>
@@ -122,6 +136,16 @@ function StudentList() {
         </div>
       </div>
 
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by email or job role..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+
       <div className="border rounded-lg overflow-hidden mb-6">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -133,12 +157,12 @@ function StudentList() {
                 User Mail
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User Name
+                Job Role
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <tr key={user.userId} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input
@@ -152,7 +176,7 @@ function StudentList() {
                   {user.userMail}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.userName}
+                  {user.jobRole}
                 </td>
               </tr>
             ))}
@@ -160,7 +184,18 @@ function StudentList() {
         </table>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center">
+          <label htmlFor="deadline" className="mr-2 text-sm text-gray-600">Course Deadline:</label>
+          <input
+            type="date"
+            id="deadline"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+            min={new Date().toISOString().split('T')[0]}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
         <button
           onClick={handleEnroll}
           disabled={selectedUsers.size === 0}

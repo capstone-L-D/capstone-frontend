@@ -4,6 +4,7 @@ import AdminHeaderSidebar from "./AdminHeaderSidebar";
 
 function User() {
   const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const token = localStorage.getItem("authToken");
 
@@ -40,6 +41,12 @@ function User() {
     navigate("/users");
   };
 
+  const filteredUsers = users.filter(user =>
+    user.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.userMail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.jobRole.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <AdminHeaderSidebar
       onNavigateToCourses={handleNavigateToCourses}
@@ -48,6 +55,16 @@ function User() {
       <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-8">
         <h2 className="text-3xl font-bold text-gray-800 mb-6">User Management</h2>
         <p className="text-lg text-gray-600 mb-8">View and manage user progress</p>
+
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search by name, email or job role..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
         
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white">
@@ -60,12 +77,15 @@ function User() {
                   Email
                 </th>
                 <th className="px-6 py-3 border-b border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                  Job Role
+                </th>
+                <th className="px-6 py-3 border-b border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white">
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user.id}>
                   <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                     <div className="text-sm leading-5 font-medium text-gray-900">
@@ -75,6 +95,11 @@ function User() {
                   <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                     <div className="text-sm leading-5 text-gray-500">
                       {user.userMail}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                    <div className="text-sm leading-5 text-gray-500">
+                      {user.jobRole}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">

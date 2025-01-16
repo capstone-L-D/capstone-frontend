@@ -165,16 +165,28 @@ function AddModuleMain() {
               <div>
                 <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                   <Clock className="h-4 w-4 mr-2" />
-                  Course Duration
+                  Course Duration (minutes)
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   name="courseDuration"
                   value={formData.courseDuration}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (value < 0) {
+                      e.target.setCustomValidity('Duration cannot be negative');
+                    } else {
+                      e.target.setCustomValidity('');
+                    }
+                    handleChange(e);
+                  }}
+                  min="0"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   required
                 />
+                <p className="text-sm text-red-500 mt-1">
+                  {formData.courseDuration < 0 && "Duration cannot be negative"}
+                </p>
               </div>
 
               <div>
@@ -182,14 +194,18 @@ function AddModuleMain() {
                   <BarChart2 className="h-4 w-4 mr-2" />
                   Course Level
                 </label>
-                <input
-                  type="text"
+                <select
                   name="courseLevel"
                   value={formData.courseLevel}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   required
-                />
+                >
+                  <option value="">Select a level</option>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
               </div>
 
               <div>

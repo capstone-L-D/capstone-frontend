@@ -61,6 +61,7 @@ function AssessmentStart() {
         const data = await resultResponse.json();
         setScore(data.score);
       }
+      console.log(data);
 
     } catch (error) {
       setError(error.message);
